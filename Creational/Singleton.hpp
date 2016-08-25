@@ -9,7 +9,7 @@
 
 #include "../Common/Common.hpp"
 
-namespace tlp
+namespace tpl
 {
 
 template<class Object>

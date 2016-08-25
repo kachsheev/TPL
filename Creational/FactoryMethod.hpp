@@ -20,6 +20,8 @@ namespace tpl {
 //	}
 //};
 
+// фабличный метод - обобщенный конструктор
+
 template<class Object>
 class FactoryMethod
 {
@@ -41,7 +43,7 @@ template<class Object>
 template<class ... Args>
 Object *FactoryMethod::create(Args ... args)
 {
-	return new Object(tlp::templates::foward(args) ...);
+	return new Object(tpl::templates::foward(args) ...);
 }
 
 }

@@ -8,7 +8,7 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
-namespace tlp
+namespace tpl
 {namespace templates
 {
 
@@ -28,8 +28,8 @@ struct RemoveRefference<T &&>
 	typedef T type;
 };
 
-template<class T> inline constexpr
-T&& foward(RemoveRefference<T>::type& object) noexcept
+template<class T> inline
+T&& foward(typename RemoveRefference<T>::type& object) noexcept
 {
 	return static_cast<T &&>(object);
 }

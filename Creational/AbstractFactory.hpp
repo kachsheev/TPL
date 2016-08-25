@@ -8,12 +8,37 @@
 #ifndef ABSTRACTFACTORY_HPP
 #define ABSTRACTFACTORY_HPP
 
-#include "FactoryMethod.hpp"
+// создание общих групп объектов
 
-template<class T>
-class AbstractFactory
-{
-public:
-};
+/*
+ * лучше всего сделать
+ * на макросах с переменным числом аргументов
+ *
+ * осталось с ними разобраться
+ */
+
+#include "../Common/Common.hpp"
+
+#define AbstractFactoryMethod(TYPE_NAME)				\
+static TYPE_NAME *create##TYPE_NAME()					\
+{														\
+	return new TYPE_NAME();								\
+}														\
+														\
+template<class ... Args>								\
+static TYPE_NAME *create##TYPE_NAME(Args ... args)		\
+{														\
+	return new TYPE_NAME(templates::foward(args) ...);	\
+}
+
+#define AbstractFactory(FACTORY_NAME, MESSAGE, ...)		\
+namespace tpl											\
+{														\
+class FACTORY_NAME										\
+{														\
+public:													\
+	FACTORY_NAME() { std::cout << MESSAGE << '\n'; }	\
+};														\
+}
 
 #endif // ABSTRACTFACTORY_HPP
