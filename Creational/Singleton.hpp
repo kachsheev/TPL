@@ -4,8 +4,8 @@
  * created:    25.08.2016
  * author:     Anton Kashcheev
  */
-#ifndef SINGLETON_HPP
-#define SINGLETON_HPP
+#ifndef CREATIONAL_SINGLETON_HPP
+#define CREATIONAL_SINGLETON_HPP
 
 #include "../Common/Common.hpp"
 
@@ -39,4 +39,4 @@ Object &Singleton::instance(Args ... args)
 
 }
 
-#endif // SINGLETON_HPP
+#endif // CREATIONAL_SINGLETON_HPP

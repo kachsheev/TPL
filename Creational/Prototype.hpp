@@ -4,8 +4,8 @@
  * created:    25.08.2016
  * author:     Anton Kashcheev
  */
-#ifndef PROTOTYPE_HPP
-#define PROTOTYPE_HPP
+#ifndef CREATIONAL_PROTOTYPE_HPP
+#define CREATIONAL_PROTOTYPE_HPP
 
 template<class Object>
 class Prototype

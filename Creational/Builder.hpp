@@ -5,8 +5,8 @@
  * author:     Anton Kashcheev
  */
 
-#ifndef BUILDER_HPP
-#define BUILDER_HPP
+#ifndef CREATIONAL_BUILDER_HPP
+#define CREATIONAL_BUILDER_HPP
 
 template<class Object>
 class Builder
@@ -14,4 +14,4 @@ class Builder
 public:
 };
 
-#endif // BUILDER_HPP
+#endif // CREATIONAL_BUILDER_HPP

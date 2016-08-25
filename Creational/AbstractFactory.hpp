@@ -1,12 +1,12 @@
 /*
- * file   :    AbstractFactory.hpp
+ * file:       AbstractFactory.hpp
  *
  * created:    25.08.2016
  * author:     Anton Kashcheev
  */
 
-#ifndef ABSTRACTFACTORY_HPP
-#define ABSTRACTFACTORY_HPP
+#ifndef CREATIONAL_ABSTRACTFACTORY_HPP
+#define CREATIONAL_ABSTRACTFACTORY_HPP
 
 // создание общих групп объектов
 
@@ -41,4 +41,4 @@ public:													\
 };														\
 }
 
-#endif // ABSTRACTFACTORY_HPP
+#endif // CREATIONAL_ABSTRACTFACTORY_HPP

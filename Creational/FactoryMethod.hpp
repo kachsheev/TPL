@@ -5,8 +5,8 @@
  * author:     Anton Kashcheev
  */
 
-#ifndef FACTORYMETHOD_HPP
-#define FACTORYMETHOD_HPP
+#ifndef CREATIONAL_FACTORYMETHOD_HPP
+#define CREATIONAL_FACTORYMETHOD_HPP
 
 #include "../Common/Common.hpp"
 
@@ -48,4 +48,4 @@ Object *FactoryMethod::create(Args ... args)
 
 }
 
-#endif // FACTORYMETHOD_HPP
+#endif // CREATIONAL_FACTORYMETHOD_HPP
