@@ -13,23 +13,23 @@ namespace tpl
 {
 
 template<class T>
-struct RemoveRefference
+struct RemoveReference
 {
 	typedef T type;
 };
 template<class T>
-struct RemoveRefference<T &>
+struct RemoveReference<T &>
 {
 	typedef T type;
 };
 template<class T>
-struct RemoveRefference<T &&>
+struct RemoveReference<T &&>
 {
 	typedef T type;
 };
 
 template<class T> inline
-T&& foward(typename RemoveRefference<T>::type& object) noexcept
+T&& foward(typename RemoveReference<T>::type& object) noexcept
 {
 	return static_cast<T &&>(object);
 }
