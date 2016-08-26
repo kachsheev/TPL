@@ -5,15 +5,19 @@
  * author:     Anton Kashcheev
  */
 
-#include <iostream>
+//#include <iostream>
 
 #include "Creational/AbstractFactory.hpp"
+#include "Creational/Prototype.hpp"
+//#include "Creational/Builder.hpp"
 
-AbstractFactory(Lol, "Factory LOL created")
+tplAbstractFactory(LolFactory, "Factory LolFactory created")
+tplPrototype(LolPrototype, "Prototype LolPrototype created")
 
 int main(int /*argc*/, char **/*argv*/)
 {
-	tpl::Lol lol;
-	std::cout << "Hello World!\n";
+	tpl::LolFactory lolFactory;
+	tpl::LolPrototype lolPrototype;
+//	std::cout << "Hello World!\n";
 	return 0;
 }

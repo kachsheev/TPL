@@ -17,9 +17,9 @@
  * осталось с ними разобраться
  */
 
-#include "../Common/Common.hpp"
+#include "../Common/Templates.hpp"
 
-#define AbstractFactoryMethod(TYPE_NAME)				\
+#define tplAbstractFactoryMethod(TYPE_NAME)				\
 static TYPE_NAME *create##TYPE_NAME()					\
 {														\
 	return new TYPE_NAME();								\
@@ -31,13 +31,13 @@ static TYPE_NAME *create##TYPE_NAME(Args ... args)		\
 	return new TYPE_NAME(templates::foward(args) ...);	\
 }
 
-#define AbstractFactory(FACTORY_NAME, MESSAGE, ...)		\
+#define tplAbstractFactory(FACTORY_NAME, MESSAGE, ...)	\
 namespace tpl											\
 {														\
 class FACTORY_NAME										\
 {														\
 public:													\
-	FACTORY_NAME() { std::cout << MESSAGE << '\n'; }	\
+	FACTORY_NAME() { /*std::cout << MESSAGE << '\n';*/ }	\
 };														\
 }
 

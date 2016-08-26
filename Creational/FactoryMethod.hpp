@@ -8,7 +8,7 @@
 #ifndef CREATIONAL_FACTORYMETHOD_HPP
 #define CREATIONAL_FACTORYMETHOD_HPP
 
-#include "../Common/Common.hpp"
+#include "../Common/Templates.hpp"
 
 namespace tpl {
 
