@@ -8,6 +8,8 @@
 #ifndef CREATIONAL_ABSTRACTFACTORY_HPP
 #define CREATIONAL_ABSTRACTFACTORY_HPP
 
+
+
 // создание общих групп объектов
 
 /*
@@ -31,13 +33,24 @@ static TYPE_NAME *create##TYPE_NAME(Args ... args)		\
 	return new TYPE_NAME(templates::foward(args) ...);	\
 }
 
-#define tplAbstractFactory(FACTORY_NAME, MESSAGE, ...)	\
+#define OVERLOADING(SUBJ) tplAbstractFactoryMethod(SUBJ)
+#include "../Common/Preprocessor.hpp"
+
+
+#define tplAbstractFactory(FACTORY_NAME, ...)			\
 namespace tpl											\
 {														\
 class FACTORY_NAME										\
 {														\
 public:													\
-	FACTORY_NAME() { /*std::cout << MESSAGE << '\n';*/ }	\
+	FACTORY_NAME() = delete;							\
+	FACTORY_NAME(FACTORY_NAME &&factory) = delete;		\
+	FACTORY_NAME(const FACTORY_NAME &factory);			\
+														\
+	operator=(FACTORY_NAME &&factory) = delete;			\
+	operator=(const FACTORY_NAME &factory) = delete;	\
+														\
+	tplGenerator(__VA_ARGS__)							\
 };														\
 }
 

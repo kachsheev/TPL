@@ -7,23 +7,38 @@
 #ifndef COMMON_AGGREGATOR_HPP
 #define COMMON_AGGREGATOR_HPP
 
+#include <cstdint>
+
 // declaration
 namespace tpl
 {namespace templates
 {
 
 template<class ... Objects>
-class Aggregator;
+class Aggregator
+{
+public:
+	bool init() const;
+
+	void initialize();
+
+	template<class ... Args>
+	void initialize(Args ... args);
+
+	unsigned int getNumber() const;
+};
 
 template<class HeadObject, class ... TailObjects>
 class Aggregator<HeadObject, TailObjects ...> : public Aggregator<TailObjects ...>
 {
 	HeadObject *headObject;
 public:
+	typedef Aggregator<HeadObject, TailObjects ...> CurrentType;
 	typedef HeadObject ValueType;
 	typedef Aggregator<TailObjects ...> BaseType;
 
 	Aggregator();
+	~Aggregator();
 
 	bool init() const;
 
@@ -37,53 +52,31 @@ public:
 
 	ValueType &get();
 	const ValueType &get() const;
+
+	template<unsigned int number>
+	auto get();
+	template<unsigned int number>
+	auto get() const;
+
+	template<unsigned int number>
+	void initialize();
+	template<unsigned int number, class ... Args>
+	void initialize(Args ... args);
+
+	template<unsigned int number>
+	auto pointer();
+	template<unsigned int number>
+	auto pointer() const;
+
+	static inline constexpr unsigned int countArgs()
+	{
+		return (sizeof ... (TailObjects)) + 1;
+	}
 };
 
 template<>
 class Aggregator<>
 {
-};
-
-template<unsigned int count, class HeadObject, class ... TailObjects>
-class Getter
-{
-public:
-	typedef typename Getter<count - 1, TailObjects ...>::ReturnType ReturnType;
-	static ReturnType& get(Aggregator<HeadObject, TailObjects ...> &&aggregator)
-	{
-		return Getter<count - 1, TailObjects ...>::get(aggregator);
-	}
-	static const ReturnType& get(const Aggregator<HeadObject, TailObjects ...> &aggregator)
-	{
-		return Getter<count - 1, TailObjects ...>::get(aggregator);
-	}
-};
-
-template<class HeadObject, class ... TailObjects>
-class Getter<0U, HeadObject, TailObjects ...>
-{
-public:
-	typedef typename Aggregator<HeadObject, TailObjects ...>::ValueType ReturnType;
-	static ReturnType& get(Aggregator<HeadObject, TailObjects ...> &&aggregator)
-	{
-		return aggregator.get();
-	}
-	static const ReturnType& get(const Aggregator<HeadObject, TailObjects ...> &aggregator)
-	{
-		return aggregator.get();
-	}
-
-template<class ... Args>
-constexpr unsigned int getCountArguments(Args ...) noexcept;
-
-template<unsigned int count, typename HeadObjects, typename... TailObjects>
-typename Getter<count, HeadObjects, TailObjects...>::ReturnType &
-get(Aggregator<HeadObjects, TailObjects...> &&aggregator);
-
-template<unsigned int count, typename HeadObjects, typename... TailObjects>
-const typename Getter<count, HeadObjects, TailObjects...>::ReturnType &
-get(const Aggregator<HeadObjects, TailObjects...> &aggregator);
-
 };
 
 }}
@@ -95,8 +88,15 @@ namespace tpl
 
 template<class HeadObject, class ... TailObjects>
 Aggregator<HeadObject, TailObjects ...>::Aggregator() :
+		Aggregator<TailObjects ...>(),
 		headObject(nullptr)
 {
+}
+
+template<class HeadObject, class ... TailObjects>
+Aggregator<HeadObject, TailObjects ...>::~Aggregator()
+{
+	delete headObject;
 }
 
 template<class HeadObject, class ... TailObjects>
@@ -122,84 +122,121 @@ Aggregator<HeadObject, TailObjects ...>::initialize(Args ... args)
 }
 
 template<class HeadObject, class ... TailObjects>
-Aggregator<HeadObject, TailObjects ...>::ValueType *
+typename Aggregator<HeadObject, TailObjects ...>::ValueType *
 Aggregator<HeadObject, TailObjects ...>::pointer()
 {
 	return headObject;
 }
 
 template<class HeadObject, class ... TailObjects>
-const Aggregator<HeadObject, TailObjects ...>::ValueType *
+const typename Aggregator<HeadObject, TailObjects ...>::ValueType *
 Aggregator<HeadObject, TailObjects ...>::pointer() const
 {
 	return headObject;
 }
 
 template<class HeadObject, class ... TailObjects>
-Aggregator<HeadObject, TailObjects ...>::ValueType &
+typename Aggregator<HeadObject, TailObjects ...>::ValueType &
 Aggregator<HeadObject, TailObjects ...>::get()
 {
 	return *headObject;
 }
 
-template<class HeadObject, class ... TailObjects>
-const Aggregator<HeadObject, TailObjects ...>::ValueType &
-Aggregator<HeadObject, TailObjects ...>::get() const
+}}
+
+
+// declaration
+namespace tpl
+{namespace templates
 {
-	return *headObject;
+
+template<unsigned int number, class HeadType, class ... TailTypes>
+struct TypeGetter
+{
+	typedef TypeGetter<number - 1, TailTypes ...> NextTypeGetter;
+	typedef typename NextTypeGetter::ValueType ValueType;
+	typedef Aggregator<HeadType, TailTypes...> CurrentAggregator;
+
+	static ValueType &get(CurrentAggregator &aggregator)
+	{
+		return NextTypeGetter::get(aggregator);
+	}
+
+	template<class ... Args>
+	static void initialize(CurrentAggregator &aggregator, Args ... args)
+	{
+		return NextTypeGetter::initialize(args ...);
+	}
+
+	static void initialize(CurrentAggregator &aggregator)
+	{
+		return NextTypeGetter::initialize(aggregator);
+	}
+
+	static const ValueType *pointer(const CurrentAggregator &aggregator)
+	{
+		return NextTypeGetter::pointer(aggregator);
+	}
+
+	static ValueType *pointer(CurrentAggregator &aggregator)
+	{
+		return NextTypeGetter::pointer(aggregator);
+	}
+};
+
+template<class HeadType, class ... TailTypes>
+struct TypeGetter<0u, HeadType, TailTypes ...>
+{
+	typedef Aggregator<HeadType, TailTypes ...> CurrentAggregator;
+	typedef typename CurrentAggregator::ValueType ValueType;
+
+	static const ValueType &get(const CurrentAggregator &aggregator)
+	{
+		return aggregator.get();
+	}
+
+	static ValueType &get(CurrentAggregator &aggregator)
+	{
+		return aggregator.get();
+	}
+
+	template<class ... Args>
+	static void initialize(CurrentAggregator &aggregator, Args ... args)
+	{
+		return aggregator.initialize(args ...);
+	}
+
+	static void initialize(CurrentAggregator &aggregator)
+	{
+		return aggregator.initialize();
+	}
+
+	static const ValueType *pointer(const CurrentAggregator &aggregator)
+	{
+		return aggregator.pointer();
+	}
+
+	static ValueType *pointer(CurrentAggregator &aggregator)
+	{
+		return aggregator.pointer();
+	}
+};
+
+template<class HeadType, class ... TailTypes>
+template<unsigned int number>
+auto Aggregator<HeadType, TailTypes ...>::get()
+{
+	return TypeGetter<number, HeadType, TailTypes ... >::get(*this);
 }
 
-template<unsigned int count, class HeadObject, class ... TailObjects>
-Getter<count, HeadObject, TailObjects ...>::ReturnType &
-Getter<count, HeadObject, TailObjects ...>::get(Aggregator<HeadObject, TailObjects ...> &&aggregator)
+template<class HeadType, class ... TailTypes>
+template<unsigned int number>
+auto Aggregator<HeadType, TailTypes ...>::get() const
 {
-	return Getter<count - 1, TailObjects ...>::get(aggregator);
+	return TypeGetter<number, HeadType, TailTypes ... >::get(*this);
 }
-
-template<unsigned int count, class HeadObject, class ... TailObjects>
-const Getter<count, HeadObject, TailObjects ...>::ReturnType &
-Getter<count, HeadObject, TailObjects ...>::get(const Aggregator<HeadObject, TailObjects ...> &&aggregator)
-{
-	return Getter<count - 1, TailObjects ...>::get(aggregator);
-}
-
-template<class HeadObject, class ... TailObjects>
-Getter<0U, HeadObject, TailObjects ...>::ReturnType &
-Getter<0U, HeadObject, TailObjects ...>::get(Aggregator<HeadObject, TailObjects ...> &&aggregator)
-{
-	return aggregator.get();
-}
-
-template<class HeadObject, class ... TailObjects>
-const Getter<0U, HeadObject, TailObjects ...>::ReturnType &
-Getter<0U, HeadObject, TailObjects ...>::get(const Aggregator<HeadObject, TailObjects ...> &aggregator)
-{
-	return aggregator.get();
-}
-
-template<class ... Args>
-constexpr unsigned int getCountArguments(Args ...) noexcept
-{
-	return sizeof...(Args);
-}
-
-template<unsigned int count, typename HeadObjects, typename... TailObjects>
-typename Getter<count, HeadObjects, TailObjects...>::ReturnType &
-get(Aggregator<HeadObjects, TailObjects...> &&aggregator)
-{
-	return Getter<count, HeadObjects, TailObjects...>::get(aggregator);
-}
-
-template<unsigned int count, typename HeadObjects, typename... TailObjects>
-const typename Getter<count, HeadObjects, TailObjects...>::ReturnType &
-get(const Aggregator<HeadObjects, TailObjects...> &aggregator)
-{
-	return Getter<count, HeadObjects, TailObjects...>::get(aggregator);
-}
-
 
 
 }}
-
 
 #endif // COMMON_AGGREGATOR_HPP

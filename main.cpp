@@ -7,17 +7,19 @@
 
 //#include <iostream>
 
-#include "Creational/AbstractFactory.hpp"
-#include "Creational/Prototype.hpp"
+//#include "Creational/AbstractFactory.hpp"
+//#include "Creational/Prototype.hpp"
 //#include "Creational/Builder.hpp"
 
-tplAbstractFactory(LolFactory, "Factory LolFactory created")
-tplPrototype(LolPrototype, "Prototype LolPrototype created")
+#include "Test.hpp"
 
 int main(int /*argc*/, char **/*argv*/)
 {
-	tpl::LolFactory lolFactory;
-	tpl::LolPrototype lolPrototype;
-//	std::cout << "Hello World!\n";
+	tpl::Test *common = new tpl::Common;
+//	tpl::Test *structurial = new tpl::StructurialPatterns();
+//	tpl::Test *creational = new tpl::CreationalPatterns();
+
+	common->start();
+
 	return 0;
 }

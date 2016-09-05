@@ -8,6 +8,14 @@
 #ifndef CREATIONAL_BUILDER_HPP
 #define CREATIONAL_BUILDER_HPP
 
+#include <cstdint>
+
+#include "../Common/Aggregator.hpp"
+
+// declaration
+namespace tpl
+{
+
 template<class ObjectPart>
 class Builder
 {
@@ -22,12 +30,26 @@ public:
 template<class Object, class ... ObjectParts>
 class Director
 {
-	Aggregator<ObjectParts ...> aggregator;
+	const std::size_t countArgs = templates::getCountArguments();
+	templates::Aggregator<Builder<ObjectParts> ...> aggregator;
 public:
 	Director();
 	~Director();
 
 	Object *getInstance();
 };
+
+}
+
+// implementation
+namespace tpl
+{
+
+template<class Object, class ... ObjectParts>
+Director::Director()
+{
+}
+
+}
 
 #endif // CREATIONAL_BUILDER_HPP

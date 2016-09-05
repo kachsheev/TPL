@@ -127,6 +127,6 @@
 	_COUNT_ARGS_(__VA_ARGS__,NEED_MACRO())(__VA_ARGS__)
 
 // work
-tplGenerator(Cat, Dog, Mouse, Tiger)
+//tplGenerator(Cat, Dog, Mouse, Tiger)
 
 #endif // COMMON_PREPROCESSOR_HPP

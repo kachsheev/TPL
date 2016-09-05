@@ -29,9 +29,27 @@ struct RemoveReference<T &&>
 };
 
 template<class T> inline
-T&& foward(typename RemoveReference<T>::type& object) noexcept
+constexpr T&& foward(typename RemoveReference<T>::type& object) noexcept
 {
 	return static_cast<T &&>(object);
+}
+
+template<class T> inline
+constexpr typename RemoveReference<T>::type move(T &&object)
+{
+	return static_cast<typename RemoveReference<T>::type>(object);
+}
+
+template<class ReturnType, class ... Args>
+constexpr unsigned int getCountArgs(ReturnType (*)(Args ...))
+{
+	return sizeof ... (Args);
+}
+
+template<class Object, class ReturnType, class ... Args>
+constexpr unsigned int getCountArgs(ReturnType (Object::*)(Args ...))
+{
+	return sizeof ... (Args);
 }
 
 }}
