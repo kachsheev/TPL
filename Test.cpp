@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include "Common/UniquePointer.hpp"
+#include "Common/Aggregator.hpp"
 #include "Test.hpp"
 
 using namespace tpl;
@@ -18,16 +20,15 @@ void Common::start()
 	uniquePointer();
 }
 
-#include "Common/Aggregator.hpp"
 void Common::aggregator()
 {
 	templates::Aggregator<int, long, float, double> primitiveTuple;
 	std::cout << "Aggregator number: " << primitiveTuple.countArgs() << '\n'
 			<< "Aggregator size: " << sizeof(primitiveTuple) << '\n';
-}
-#undef COMMON_AGGREGATOR_HPP
 
-#include "Common/UniquePointer.hpp"
+	primitiveTuple.initialize<0>(-10);
+}
+
 void Common::uniquePointer()
 {
 }
