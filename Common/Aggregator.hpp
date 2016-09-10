@@ -20,23 +20,33 @@ struct TypeGetter;
 template<class ... Objects>
 class Aggregator
 {
+
 public:
-//	bool init() const;
+	bool init() const;
 
-//	template<unsigned int number>
-//	void initialize();
-//	template<unsigned int number, class ... Args>
-//	void initialize(Args ... args);
+	template<unsigned int number>
+	typename TypeGetter<number, Objects ... >::ValueType *pointer() noexcept;
+	template<unsigned int number>
+	const typename TypeGetter<number, Objects ... >::ValueType *pointer() const noexcept;
 
-//	template<unsigned int number>
-//	typename TypeGetter<number, Objects ... >::ValueType *pointer();
-//	template<unsigned int number>
-//	const typename TypeGetter<number, Objects ... >::ValueType *pointer() const;
+	template<unsigned int number>
+	typename TypeGetter<number, Objects ... >::ValueType &get();
+	template<unsigned int number>
+	const typename TypeGetter<number, Objects ... >::ValueType &get() const;
 
-//	template<unsigned int number>
-//	typename TypeGetter<number, Objects ... >::ValueType &get();
-//	template<unsigned int number>
-//	const typename TypeGetter<number, Objects ... >::ValueType &get() const;
+	template<unsigned int number>
+	void initialize();
+	template<unsigned int number, class ... Args>
+	void initialize(Args ... args);
+
+	void initialize();
+	template<class ... Args>
+	void initialize(Args ... args);
+
+	static inline constexpr unsigned int countArgs()
+	{
+		return (sizeof ... (Objects));
+	}
 };
 
 template<class HeadObject, class ... TailObjects>
@@ -53,8 +63,16 @@ public:
 
 	bool init() const;
 
-	ValueType* pointer();
-	const ValueType* pointer() const;
+	template<unsigned int number>
+	bool init() const;
+
+	ValueType* pointer()  noexcept;
+	const ValueType* pointer() const noexcept;
+
+	template<unsigned int number>
+	typename TypeGetter<number, HeadObject, TailObjects ... >::ValueType* pointer() noexcept;
+	template<unsigned int number>
+	const typename TypeGetter<number, HeadObject, TailObjects ... >::ValueType* pointer() const noexcept;
 
 	ValueType &get();
 	const ValueType &get() const;
@@ -64,15 +82,14 @@ public:
 	template<unsigned int number>
 	const typename TypeGetter<number, HeadObject, TailObjects ... >::ValueType &get() const;
 
+	void initialize();
+	template<class ... Args>
+	void initialize(Args ... args);
+
 	template<unsigned int number>
 	void initialize();
 	template<unsigned int number, class ... Args>
 	void initialize(Args ... args);
-
-	template<unsigned int number>
-	typename TypeGetter<number, HeadObject, TailObjects ... >::ValueType *pointer();
-	template<unsigned int number>
-	const typename TypeGetter<number, HeadObject, TailObjects ... >::ValueType *pointer() const;
 
 	static inline constexpr unsigned int countArgs()
 	{
@@ -114,16 +131,32 @@ Aggregator<HeadObject, TailObjects ...>::init() const
 
 template<class HeadObject, class ... TailObjects>
 typename Aggregator<HeadObject, TailObjects ...>::ValueType *
-Aggregator<HeadObject, TailObjects ...>::pointer()
+Aggregator<HeadObject, TailObjects ...>::pointer() noexcept
 {
 	return headObject;
 }
 
 template<class HeadObject, class ... TailObjects>
 const typename Aggregator<HeadObject, TailObjects ...>::ValueType *
-Aggregator<HeadObject, TailObjects ...>::pointer() const
+Aggregator<HeadObject, TailObjects ...>::pointer() const noexcept
 {
 	return headObject;
+}
+
+template<class HeadObject, class ... TailObjects>
+template<unsigned int number>
+typename TypeGetter<number, HeadObject, TailObjects ... >::ValueType *
+Aggregator<HeadObject, TailObjects ...>::pointer() noexcept
+{
+	return TypeGetter<number, HeadObject, TailObjects ... >::pointer(*this);
+}
+
+template<class HeadObject, class ... TailObjects>
+template<unsigned int number>
+const typename TypeGetter<number, HeadObject, TailObjects ... >::ValueType *
+Aggregator<HeadObject, TailObjects ...>::pointer() const noexcept
+{
+	return TypeGetter<number, HeadObject, TailObjects ... >::pointer(*this);
 }
 
 template<class HeadObject, class ... TailObjects>
@@ -131,6 +164,56 @@ typename Aggregator<HeadObject, TailObjects ...>::ValueType &
 Aggregator<HeadObject, TailObjects ...>::get()
 {
 	return *headObject;
+}
+
+template<class HeadObject, class ... TailObjects>
+const typename Aggregator<HeadObject, TailObjects ...>::ValueType &
+Aggregator<HeadObject, TailObjects ...>::get() const
+{
+	return *headObject;
+}
+
+template<class HeadType, class ... TailTypes>
+template<unsigned int number>
+typename TypeGetter<number, HeadType, TailTypes ... >::ValueType &
+Aggregator<HeadType, TailTypes ...>::get()
+{
+	return TypeGetter<number, HeadType, TailTypes ... >::get(*this);
+}
+
+template<class HeadType, class ... TailTypes>
+template<unsigned int number>
+const typename TypeGetter<number, HeadType, TailTypes ... >::ValueType &
+Aggregator<HeadType, TailTypes ...>::get() const
+{
+	return TypeGetter<number, HeadType, TailTypes ... >::get(*this);
+}
+
+template<class HeadObject, class ... TailObjects>
+void Aggregator<HeadObject, TailObjects ...>::initialize()
+{
+	headObject = new HeadObject();
+}
+
+template<class HeadObject, class ... TailObjects>
+template<class ... Args>
+void Aggregator<HeadObject, TailObjects ...>::initialize(Args ... args)
+{
+	headObject = new HeadObject(args ...);
+}
+
+template<class HeadObject, class ... TailObjects>
+template<unsigned int number>
+void Aggregator<HeadObject, TailObjects ...>::initialize()
+{
+	TypeGetter<number, HeadObject, TailObjects ...>::initialize(*this);
+}
+
+template<class HeadObject, class ... TailObjects>
+template<unsigned int number, class ... Args>
+void Aggregator<HeadObject, TailObjects ...>::initialize(Args ... args)
+{
+	TypeGetter<number, HeadObject, TailObjects ...>::initialize(*this, args ...);
 }
 
 }}
@@ -156,20 +239,20 @@ struct TypeGetter
 	template<class ... Args>
 	static void initialize(CurrentAggregator &aggregator, Args ... args)
 	{
-		return NextTypeGetter::initialize(args ...);
+		NextTypeGetter::initialize(aggregator, args ...);
 	}
 
 	static void initialize(CurrentAggregator &aggregator)
 	{
-		return NextTypeGetter::initialize(aggregator);
+		NextTypeGetter::initialize(aggregator);
 	}
 
-	static const ValueType *pointer(const CurrentAggregator &aggregator)
+	static const ValueType *pointer(const CurrentAggregator &aggregator) noexcept
 	{
 		return NextTypeGetter::pointer(aggregator);
 	}
 
-	static ValueType *pointer(CurrentAggregator &aggregator)
+	static ValueType *pointer(CurrentAggregator &aggregator) noexcept
 	{
 		return NextTypeGetter::pointer(aggregator);
 	}
@@ -202,33 +285,16 @@ struct TypeGetter<0u, HeadType, TailTypes ...>
 		return aggregator.initialize();
 	}
 
-	static const ValueType *pointer(const CurrentAggregator &aggregator)
+	static const ValueType *pointer(const CurrentAggregator &aggregator) noexcept
 	{
 		return aggregator.pointer();
 	}
 
-	static ValueType *pointer(CurrentAggregator &aggregator)
+	static ValueType *pointer(CurrentAggregator &aggregator) noexcept
 	{
 		return aggregator.pointer();
 	}
 };
-
-template<class HeadType, class ... TailTypes>
-template<unsigned int number>
-typename TypeGetter<number, HeadType, TailTypes ... >::ValueType &
-Aggregator<HeadType, TailTypes ...>::get()
-{
-	return TypeGetter<number, HeadType, TailTypes ... >::get(*this);
-}
-
-template<class HeadType, class ... TailTypes>
-template<unsigned int number>
-const typename TypeGetter<number, HeadType, TailTypes ... >::ValueType &
-Aggregator<HeadType, TailTypes ...>::get() const
-{
-	return TypeGetter<number, HeadType, TailTypes ... >::get(*this);
-}
-
 
 }}
 
