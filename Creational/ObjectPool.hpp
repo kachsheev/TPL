@@ -1,0 +1,4 @@
+#ifndef OBJECTPOOL_HPP
+#define OBJECTPOOL_HPP
+
+#endif // OBJECTPOOL_HPP
