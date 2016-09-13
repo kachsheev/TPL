@@ -5,10 +5,19 @@
  * author:     Anton Kashcheev
  */
 
+#include <cassert>
 #include <iostream>
 
 #include "Common/UniquePointer.hpp"
 #include "Common/Aggregator.hpp"
+
+#include "Creational/FactoryMethod.hpp"
+#include "Creational/AbstractFactory.hpp"
+#include "Creational/Builder.hpp"
+#include "Creational/Prototype.hpp"
+#include "Creational/Singleton.hpp"
+#include "Creational/ObjectPool.hpp"
+
 #include "Test.hpp"
 
 using namespace tpl;
@@ -42,7 +51,58 @@ void Common::aggregator()
 			  << *primitiveTuple.pointer<3u>() << '\n';
 }
 
+template<typename Type>
+class Object
+{
+public:
+	Object() = delete;
+	Object(const Object &) = delete;
+	Object(Object &&) = delete;
+	Object(size_t arraySize) :
+			arrSize(arraySize)
+	{
+		assert(arraySize != 0);
+		array = new Type[arrSize];
+	}
+
+	~Object()
+	{
+		delete[] array;
+	}
+
+	Type &operator [](size_t index)
+	{
+		return array[index];
+	}
+
+	size_t size()
+	{
+		return arrSize;
+	}
+
+private:
+	Type *array;
+	size_t arrSize;
+};
+
 void Common::uniquePointer()
 {
-}
+	std::cout << "Object<long>:";
+	templates::UniquePointer<Object<long>> uniquePointer = templates::makeUnique<Object<long>>(size_t(4));
+	Object<long> &object = *uniquePointer;
+	for (size_t i = 0; i < object.size(); ++i)
+	{
+		object[i] = (i + 1) * (i + 1);
+		std::cout << ' ' << object[i];
+	}
+	std::cout << '\n';
 
+	std::cout << "Object<long> (moved):";
+	templates::UniquePointer<Object<long>> uniquePointer2 = uniquePointer;
+	for (size_t i = 0; i < object.size(); ++i)
+	{
+		object[i] = (i + 1) * (i + 1);
+		std::cout << ' ' << uniquePointer2.operator *()[i];
+	}
+	std::cout << '\n';
+}

@@ -16,10 +16,16 @@
 int main(int /*argc*/, char **/*argv*/)
 {
 	tpl::Test *common = new tpl::Common;
-//	tpl::Test *structurial = new tpl::StructurialPatterns();
-//	tpl::Test *creational = new tpl::CreationalPatterns();
+	tpl::Test *structurial = nullptr; //new tpl::StructurialPatterns();
+	tpl::Test *creational = nullptr; //new tpl::CreationalPatterns();
 
 	common->start();
+//	structurial->start();
+//	creational->start();
+
+	delete common;
+	delete structurial;
+	delete creational;
 
 	return 0;
 }

@@ -59,6 +59,7 @@ private:
 	void factoryMethod();
 	void prototype();
 	void singleton();
+	void objectPool();
 };
 
 class StructurialPatterns: public Test
