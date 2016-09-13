@@ -52,6 +52,12 @@ constexpr unsigned int getCountArgs(ReturnType (Object::*)(Args ...))
 	return sizeof ... (Args);
 }
 
+template<class ... Args>
+constexpr unsigned int getCountArgs()
+{
+	return sizeof ... (Args);
+}
+
 }}
 
 #endif // COMMON_HPP
