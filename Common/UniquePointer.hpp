@@ -16,8 +16,8 @@ template<class Object>
 class UniquePointer
 {
 public:
-	template<class ... Args>
-	friend UniquePointer<Object> makeUnique(Args ... args);
+	template<class CreationObject, class ... Args>
+	friend UniquePointer<CreationObject> makeUnique(Args ... args);
 
 	UniquePointer();
 	UniquePointer(const UniquePointer<Object> &) = delete;
@@ -25,16 +25,18 @@ public:
 	UniquePointer(UniquePointer<Object> &&);
 	~UniquePointer();
 
-	UniquePointer<Object>& operator =(const UniquePointer<Object> &) {}
-	UniquePointer<Object>& operator =(UniquePointer<Object> &&) {}
+	UniquePointer<Object> &operator=(const UniquePointer<Object> &) = delete;
+	const UniquePointer<Object> &operator =(const UniquePointer<Object> &) const;
 
 	Object* operator->();
 	Object& operator*();
 
-private:
-	void assign(UniquePointer<Object> &);
+	const Object* operator->() const;
+	const Object& operator*() const;
 
-	Object *object;
+private:
+	void assign(const UniquePointer<Object> &) const;
+	mutable Object *object;
 };
 
 template<class Object, class ... Args>
@@ -72,19 +74,38 @@ UniquePointer<Object>::~UniquePointer()
 }
 
 template<class Object>
-Object* UniquePointer<Object>::operator->()
+const UniquePointer<Object>& UniquePointer<Object>::operator =(const UniquePointer<Object> &uniquePointer) const
+{
+	assign(uniquePointer);
+	return *this;
+}
+
+template<class Object>
+Object *UniquePointer<Object>::operator->()
 {
 	return object;
 }
 
 template<class Object>
-Object& UniquePointer<Object>::operator*()
+Object &UniquePointer<Object>::operator*()
 {
 	return *object;
 }
 
 template<class Object>
-void UniquePointer<Object>::assign(UniquePointer<Object> &pointer)
+const Object *UniquePointer<Object>::operator->() const
+{
+	return object;
+}
+
+template<class Object>
+const Object &UniquePointer<Object>::operator*() const
+{
+	return *object;
+}
+
+template<class Object>
+void UniquePointer<Object>::assign(const UniquePointer<Object> &pointer) const
 {
 	object = pointer.object;
 	pointer.object = nullptr;
