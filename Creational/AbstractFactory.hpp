@@ -19,6 +19,7 @@
  * осталось с ними разобраться
  */
 
+#include "../Common/Preprocessor.hpp"
 #include "../Common/Templates.hpp"
 
 #define tplAbstractFactoryMethod(TYPE_NAME)				\
@@ -28,14 +29,12 @@ static TYPE_NAME *create##TYPE_NAME()					\
 }														\
 														\
 template<class ... Args>								\
-static TYPE_NAME *create##TYPE_NAME(Args ... args)		\
+static TYPE_NAME *create##TYPE_NAME(Args&& ... args)		\
 {														\
 	return new TYPE_NAME(templates::foward(args) ...);	\
 }
 
 #define OVERLOADING(SUBJ) tplAbstractFactoryMethod(SUBJ)
-#include "../Common/Preprocessor.hpp"
-
 
 #define tplAbstractFactory(FACTORY_NAME, ...)			\
 namespace tpl											\

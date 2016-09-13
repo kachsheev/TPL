@@ -9,6 +9,7 @@
 #define OBJECTPOOL_HPP
 
 #include <cstdint>
+#include <assert.h>
 
 // declaration
 namespace tpl
@@ -21,19 +22,24 @@ public:
 	typedef std::size_t Size;
 
 	ObjectPool();
-	ObjectPool(const ObjectPool<Object> &);
-	ObjectPool(ObjectPool<Object> &&);
+	ObjectPool(Size size);
+	ObjectPool(const ObjectPool<Object> &) = delete;
+	ObjectPool(ObjectPool<Object> &&) = delete;
 	~ObjectPool();
 
 	ObjectPool<Object> &operator=(const ObjectPool<Object> &objectPool);
 	ObjectPool<Object> &operator=(ObjectPool<Object> &&objectPool);
 
-	void reserve(std::size_t size);
-	void resize(std::size_t size);
+	void reserve(Size size);
+	void resize(Size size);
 
-	void clear();
+	void clean();
 
-	std::size_t size();
+	Size size();
+	Size capacity();
+
+	void incrementSize();
+	void decrementSize();
 
 	Object &get(Size index) noexcept;
 	template<class RealObject>
@@ -76,7 +82,118 @@ private:
 }
 
 // implementation
-//namespace tpl
-//{
-//}
+namespace tpl
+{
+
+template<class Object>
+ObjectPool<Object>::ObjectPool() :
+		arrayObjectPool(nullptr),
+		poolSize(0),
+		poolCapacity(0)
+{
+
+}
+
+template<class Object>
+ObjectPool<Object>::ObjectPool(ObjectPool<Object>::Size size) :
+		poolSize(0),
+		poolCapacity(size)
+{
+	arrayObjectPool = new Object*[poolCapacity];
+	for (Size i = 0; i < poolCapacity; ++i)
+	{
+		arrayObjectPool[i] = nullptr;
+	}
+}
+
+template<class Object>
+void ObjectPool<Object>::reserve(ObjectPool<Object>::Size size)
+{
+	Object **tempArrayPool = new Object *[poolCapacity + size];
+	for (Size i = 0; i < poolSize; ++i)
+	{
+		tempArrayPool[i] = arrayObjectPool[i];
+	}
+	delete[] arrayObjectPool;
+	arrayObjectPool = tempArrayPool;
+	poolCapacity += size;
+}
+
+template<class Object>
+void ObjectPool<Object>::resize(ObjectPool<Object>::Size size)
+{
+	if (size > poolCapacity)
+	{
+		Object **tempArrayPool = new Object *[size];
+		for (Size i = 0; i < poolSize; ++i)
+		{
+			tempArrayPool[i] = arrayObjectPool[i];
+		}
+		delete[] arrayObjectPool;
+		arrayObjectPool = tempArrayPool;
+		poolCapacity = size;
+	}
+}
+
+template<class Object>
+void ObjectPool<Object>::clean()
+{
+	for (Size i = 0; i < poolSize; ++i)
+	{
+		delete arrayObjectPool[i];
+	}
+	poolSize = 0;
+}
+
+template<class Object>
+typename ObjectPool<Object>::Size ObjectPool<Object>::size()
+{
+	return poolSize;
+}
+
+template<class Object>
+typename ObjectPool<Object>::Size ObjectPool<Object>::capacity()
+{
+	return poolCapacity;
+}
+
+template<class Object>
+void ObjectPool<Object>::incrementSize()
+{
+	assert(poolSize != poolCapacity);
+	++poolSize;
+}
+
+template<class Object>
+Object &ObjectPool<Object>::get(typename ObjectPool<ObjectPool>::Size index) noexcept
+{
+	assert(index < poolSize);
+	return *arrayObjectPool[index];
+}
+
+template<class Object>
+template<class RealObject>
+RealObject &ObjectPool<Object>::get(typename ObjectPool<ObjectPool>::Size index) noexcept
+{
+	assert(index < poolSize);
+	return *static_cast<RealObject *>(arrayObjectPool[index]);
+}
+
+template<class Object>
+const Object &ObjectPool<Object>::get(typename ObjectPool<ObjectPool>::Size index) const noexcept
+{
+	assert(index < poolSize);
+	return *arrayObjectPool[index];
+}
+
+}
+
+template<class Object>
+template<class RealObject>
+const RealObject &ObjectPool<Object>::get(ObjectPool<ObjectPool>::Size index) const noexcept
+{
+	assert(index < poolSize);
+	return *static_cast<RealObject *>(arrayObjectPool[index]);
+}
+
 #endif // OBJECTPOOL_HPP

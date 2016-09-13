@@ -34,14 +34,14 @@ public:
 
 
 template<class Object>
-Object *FactoryMethod::create()
+Object *FactoryMethod<Object>::create()
 {
 	return new Object();
 }
 
 template<class Object>
 template<class ... Args>
-Object *FactoryMethod::create(Args ... args)
+Object *FactoryMethod<Object>::create(Args ... args)
 {
 	return new Object(tpl::templates::foward(args) ...);
 }

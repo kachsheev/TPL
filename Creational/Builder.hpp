@@ -10,6 +10,7 @@
 
 #include <cstdint>
 
+#include "../Common/Templates.hpp"
 #include "../Common/Aggregator.hpp"
 
 // declaration
@@ -30,7 +31,7 @@ public:
 template<class Object, class ... ObjectParts>
 class Director
 {
-	const std::size_t countArgs = templates::getCountArguments();
+	const std::size_t countArgs = templates::getCountArgs<ObjectParts ...>();
 	templates::Aggregator<Builder<ObjectParts> ...> aggregator;
 public:
 	Director();
@@ -46,7 +47,7 @@ namespace tpl
 {
 
 template<class Object, class ... ObjectParts>
-Director::Director()
+Director<Object, ObjectParts ...>::Director()
 {
 }
 

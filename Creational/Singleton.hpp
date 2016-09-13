@@ -37,15 +37,15 @@ namespace tpl
 {
 
 template<class Object>
-Object &Singleton::instance()
+Object &Singleton<Object>::instance()
 {
-	static Object object();
+	static Object object;
 	return object;
 }
 
 template<class Object>
 template<class ... Args>
-Object &Singleton::instance(Args ... args)
+Object &Singleton<Object>::instance(Args ... args)
 {
 	static Object object(templates::foward(args) ...);
 	return object;
