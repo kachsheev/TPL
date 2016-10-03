@@ -17,27 +17,108 @@
 namespace tpl
 {
 
+// default
 template<class ObjectPart>
 class Builder
 {
 public:
-	virtual ~Builder()
+	~Builder()
 	{
 	}
 
-	ObjectPart *getPart();
+	template<class ... Args>
+	ObjectPart getPart(Args &&... args); // specialize for each type
+};
+
+// reference
+template<class ObjectPart>
+class Builder<ObjectPart &>
+{
+public:
+	~Builder()
+	{
+	}
+
+	template<class ... Args>
+	ObjectPart &getPart(Args &&... args); // specialize for each type
+};
+
+// const reference
+template<class ObjectPart>
+class Builder<const ObjectPart &>
+{
+public:
+	~Builder()
+	{
+	}
+
+	template<class ... Args>
+	ObjectPart &getPart(Args &&... args); // specialize for each type
+};
+
+// pointer
+template<class ObjectPart>
+class Builder<ObjectPart *>
+{
+public:
+	~Builder()
+	{
+	}
+
+	template<class ... Args>
+	ObjectPart *getPart(Args &&... args); // specialize for each type
+};
+
+// pointer
+template<class ObjectPart>
+class Builder<const ObjectPart *>
+{
+public:
+	~Builder()
+	{
+	}
+
+	template<class ... Args>
+	const ObjectPart *getPart(Args &&... args); // specialize for each type
+};
+
+// pointer
+template<class ObjectPart>
+class Builder<ObjectPart * const>
+{
+public:
+	~Builder()
+	{
+	}
+
+	template<class ... Args>
+	ObjectPart * const getPart(Args &&... args); // specialize for each type
+};
+
+// pointer
+template<class ObjectPart>
+class Builder<const ObjectPart * const>
+{
+public:
+	~Builder()
+	{
+	}
+
+	template<class ... Args>
+	const ObjectPart * const getPart(Args &&... args); // specialize for each type
 };
 
 template<class Object, class ... ObjectParts>
 class Director
 {
-	const std::size_t countArgs = templates::getCountArgs<ObjectParts ...>();
+	const std::size_t countArgs = templates::countArgs<ObjectParts ...>();
 	templates::Aggregator<Builder<ObjectParts> ...> aggregator;
 public:
 	Director();
 	~Director();
 
-	Object *getInstance();
+	template<class ... Args>
+	Object *getInstance(Args &&... args); // specialize for each type
 };
 
 }
