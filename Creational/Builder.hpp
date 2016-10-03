@@ -82,32 +82,6 @@ public:
 	const ObjectPart *getPart(Args &&... args); // specialize for each type
 };
 
-// pointer
-template<class ObjectPart>
-class Builder<ObjectPart * const>
-{
-public:
-	~Builder()
-	{
-	}
-
-	template<class ... Args>
-	ObjectPart * const getPart(Args &&... args); // specialize for each type
-};
-
-// pointer
-template<class ObjectPart>
-class Builder<const ObjectPart * const>
-{
-public:
-	~Builder()
-	{
-	}
-
-	template<class ... Args>
-	const ObjectPart * const getPart(Args &&... args); // specialize for each type
-};
-
 template<class Object, class ... ObjectParts>
 class Director
 {
