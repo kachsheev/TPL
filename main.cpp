@@ -20,7 +20,7 @@ int main(int /*argc*/, char **/*argv*/)
 	tpl::Test *creational = nullptr; //new tpl::CreationalPatterns();
 
 	common->start();
-//	structurial->start();
+	structurial->start();
 //	creational->start();
 
 	delete common;

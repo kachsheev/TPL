@@ -25,12 +25,10 @@ class SinglePrototype
 {
 	Object object;
 public:
-	SinglePrototype();
-
 	template<class ... Args>
-	SinglePrototype(Args ... args);
+	SinglePrototype(Args &&... args);
 
-	Object *clone();
+	Object clone();
 };
 
 }
@@ -40,43 +38,39 @@ namespace tpl
 {
 
 template<class Object>
-SinglePrototype<Object>::SinglePrototype() :
-		object()
-{
-}
-
-template<class Object>
 template<class ... Args>
-SinglePrototype<Object>::SinglePrototype(Args ... args) :
+SinglePrototype<Object>::SinglePrototype(Args &&... args) :
 		object(templates::foward(args) ...)
 {
 }
 
 template<class Object>
-Object *SinglePrototype<Object>::clone()
+Object SinglePrototype<Object>::clone()
 {
-	return new Object(object);
+	return Object(object);
 }
 
 }
 
-#define tplPrototypeClone(OBJECT)			\
-		OBJECT *clone##OBJECT()						\
-		{											\
-			return singlePrototype##OBJECT.clone();	\
-		}
+#define tplPrototypeClone(SUBJ)			\
+OBJECT *clone##SUBJ()						\
+{											\
+	return singlePrototype##SUBJ.clone();	\
+}
 
-#define tplPrototypeEncapsulate(OBJECT)					\
-		SinglePrototype<OBJECT> singlePrototype##OBJECT;
+#define tplPrototypeEncapsulate(SUBJ)			\
+SinglePrototype<OBJECT> singlePrototype##SUBJ;
 
-#define tplPrototype(PROTOTYPE_NAME, MESSAGE, ...)	\
-		namespace tpl												\
-		{															\
-		class PROTOTYPE_NAME										\
-		{															\
-		public:														\
-			PROTOTYPE_NAME() { /*std::cout << MESSAGE << '\n';*/ }		\
-		};															\
-		}
+#define tplMultiPrototype(PROTOTYPE_NAME, ...)	\
+namespace tpl									\
+{												\
+class PROTOTYPE_NAME							\
+{												\
+public:											\
+	PROTOTYPE_NAME() {}							\
+												\
+												\
+};												\
+}
 
 #endif // PROTOTYPE_HPP
