@@ -8,8 +8,8 @@
 #ifndef OBJECTPOOL_HPP
 #define OBJECTPOOL_HPP
 
-#include <cstdint>
 #include <assert.h>
+#include "../Common/Types.hpp"
 
 // declaration
 namespace tpl
@@ -19,7 +19,7 @@ template<class Object>
 class ObjectPool
 {
 public:
-	typedef std::size_t Size;
+	typedef types::size_t Size;
 
 	ObjectPool();
 	ObjectPool(Size size);
@@ -95,7 +95,7 @@ ObjectPool<Object>::ObjectPool() :
 }
 
 template<class Object>
-ObjectPool<Object>::ObjectPool(ObjectPool<Object>::Size size) :
+ObjectPool<Object>::ObjectPool(types::size_t size) :
 		poolSize(0),
 		poolCapacity(size)
 {
@@ -107,7 +107,7 @@ ObjectPool<Object>::ObjectPool(ObjectPool<Object>::Size size) :
 }
 
 template<class Object>
-void ObjectPool<Object>::reserve(ObjectPool<Object>::Size size)
+void ObjectPool<Object>::reserve(types::size_t size)
 {
 	Object **tempArrayPool = new Object *[poolCapacity + size];
 	for (Size i = 0; i < poolSize; ++i)
@@ -120,7 +120,7 @@ void ObjectPool<Object>::reserve(ObjectPool<Object>::Size size)
 }
 
 template<class Object>
-void ObjectPool<Object>::resize(ObjectPool<Object>::Size size)
+void ObjectPool<Object>::resize(types::size_t size)
 {
 	if (size > poolCapacity)
 	{
@@ -146,13 +146,13 @@ void ObjectPool<Object>::clean()
 }
 
 template<class Object>
-typename ObjectPool<Object>::Size ObjectPool<Object>::size()
+typename types::size_t ObjectPool<Object>::size()
 {
 	return poolSize;
 }
 
 template<class Object>
-typename ObjectPool<Object>::Size ObjectPool<Object>::capacity()
+typename types::size_t ObjectPool<Object>::capacity()
 {
 	return poolCapacity;
 }
@@ -165,7 +165,7 @@ void ObjectPool<Object>::incrementSize()
 }
 
 template<class Object>
-Object &ObjectPool<Object>::get(typename ObjectPool<ObjectPool>::Size index) noexcept
+Object &ObjectPool<Object>::get(typename types::size_t index) noexcept
 {
 	assert(index < poolSize);
 	return *arrayObjectPool[index];
@@ -173,27 +173,27 @@ Object &ObjectPool<Object>::get(typename ObjectPool<ObjectPool>::Size index) noe
 
 template<class Object>
 template<class RealObject>
-RealObject &ObjectPool<Object>::get(typename ObjectPool<ObjectPool>::Size index) noexcept
+RealObject &ObjectPool<Object>::get(typename types::size_t index) noexcept
 {
 	assert(index < poolSize);
 	return *static_cast<RealObject *>(arrayObjectPool[index]);
 }
 
 template<class Object>
-const Object &ObjectPool<Object>::get(typename ObjectPool<ObjectPool>::Size index) const noexcept
+const Object &ObjectPool<Object>::get(typename types::size_t index) const noexcept
 {
 	assert(index < poolSize);
 	return *arrayObjectPool[index];
 }
 
-}
-
 template<class Object>
 template<class RealObject>
-const RealObject &ObjectPool<Object>::get(ObjectPool<ObjectPool>::Size index) const noexcept
+const RealObject &ObjectPool<Object>::get(typename types::size_t index) const noexcept
 {
 	assert(index < poolSize);
 	return *static_cast<RealObject *>(arrayObjectPool[index]);
+}
+
 }
 
 #endif // OBJECTPOOL_HPP
