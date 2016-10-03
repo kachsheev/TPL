@@ -23,9 +23,11 @@ void CreationalPatterns::start()
 	objectPool();
 }
 
+typedef Object<long> TestObject;
+tplAbstractFactory(TestFactory, TestObject)
+
 void CreationalPatterns::abstractFactory()
 {
-
 }
 
 void CreationalPatterns::builder()

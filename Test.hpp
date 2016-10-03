@@ -7,8 +7,45 @@
 #ifndef TEST_HPP
 #define TEST_HPP
 
+#include <stdint.h>
+#include <cassert>
+
 namespace tpl
 {
+
+template<typename Type>
+class Object
+{
+public:
+	Object() = delete;
+	Object(const Object &) = delete;
+	Object(Object &&) = delete;
+	Object(unsigned int arraySize) :
+			arrSize(arraySize)
+	{
+		assert(arraySize != 0);
+		array = new Type[arrSize];
+	}
+
+	~Object()
+	{
+		delete[] array;
+	}
+
+	Type &operator [](unsigned int index)
+	{
+		return array[index];
+	}
+
+	unsigned int size()
+	{
+		return arrSize;
+	}
+
+private:
+	Type *array;
+	unsigned int arrSize;
+};
 
 class Test
 {
@@ -52,7 +89,7 @@ public:
 	{
 	}
 
-//	virtual start() = 0;
+	virtual void start();
 private:
 	void abstractFactory();
 	void builder();
